@@ -11,7 +11,7 @@ const {
     replyToPost,
     likeOrUnlikeReply,
     likeProduct,
-
+    createcatagories,
     replyToReply
     
 
@@ -37,7 +37,13 @@ router.route("/").post(
   authenticateUser,
   upload.array('images', 6),
   createposts
-  ).get(getAllposts);
+  )
+  router.route("/catagorie").post(
+    authenticateUser,
+    upload.array('images', 6),
+    createcatagories
+    )
+  router.get("/",getAllposts);
 
 router
   .route("/:id")

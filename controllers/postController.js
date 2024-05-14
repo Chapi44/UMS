@@ -1,5 +1,6 @@
 const Product = require("../model/post");
 const Like = require("../model/like");
+const Catagory= require("../model/category");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 const path = require("path");
@@ -8,7 +9,7 @@ const baseURL = process.env.BASE_URL;
 
 const createposts = async (req, res) => {
   try {
-    const { name, description,catagory} = req.body;
+    const { name, description,catagory,color,price } = req.body;
 
     // Construct image paths with base URL
     const pictures = req.files.map(file => baseURL + "/uploads/posts/" + file.filename);
@@ -22,6 +23,40 @@ const createposts = async (req, res) => {
       catagory,
       description,
       images: pictures,
+      color,
+      price,
+      user: userId, // Assign userId to the user field
+    
+    });
+
+    // Check if userId is missing
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    res.status(StatusCodes.CREATED).json({ post: newPost });
+  } catch (error) {
+    console.error('Error creating post:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
+  }
+};
+
+const createcatagories = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    // Construct image paths with base URL
+    const pictures = req.files.map(file => baseURL + "/uploads/posts/" + file.filename);
+
+    // Use req.userId obtained from the decoded token
+    const userId = req.user.userId;
+    console.log(userId);
+
+    const newPost = await Catagory.create({
+      name,
+     
+      images: pictures,
+      
       user: userId, // Assign userId to the user field
     
     });
@@ -136,7 +171,7 @@ const updatepostbyid = async (req, res) => {
       updatedPost.description = req.body.description;
     }
     if (req.body.category) {
-      updatedPost.category = req.body.category;
+      updatedPost.catagory = req.body.category;
     }
 
     // Handle image update if available
@@ -207,8 +242,6 @@ const deletepostbyid = async (req, res) => {
   }
 };
 
-
-
 const likeProduct = async (req, res) => {
   try {
     const { id: productId } = req.params;
@@ -263,8 +296,6 @@ const likeProduct = async (req, res) => {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
-
-
 
 const replyToPost = async (req, res) => {
   try {
@@ -396,7 +427,8 @@ module.exports = {
   likeProduct,
   replyToPost,
   likeOrUnlikeReply,
-  replyToReply
+  replyToReply,
+  createcatagories
 
 };
 

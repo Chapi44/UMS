@@ -159,7 +159,7 @@ const forgotPassword = async (req, res) => {
 
     var forgotPasswordLink = `http://localhost:3000/reset-password/?token=${forgotPasswordToken}`;
     var mailOptions = {
-      from: "socialmedia@gmail.com",
+      from: "mtu@gmail.com",
       to: email,
       subject: "Reset Password",
       html:
@@ -178,12 +178,12 @@ const forgotPassword = async (req, res) => {
         '<span style="font-size: 24px; font-weight: normal;color: #FFFFFF">FORGOT PASSWORD</span></td></tr><tr>' +
         '<td align="left" valign="top" colspan="2" style="padding-top: 10px;">' +
         '<span style="font-size: 18px; line-height: 1.5; color: #333333;">' +
-        " We have sent you this email in response to your request to reset your password on <a href='http://localhost:3000'>NeuroGen AI System</a><br/><br/>" +
+        " We have sent you this email in response to your request to reset your password on <a href='http://localhost:3000'>MTU System</a><br/><br/>" +
         'To reset your password for, please follow the link below: <button style="font:inherit; cursor: pointer; border: #272727 2px solid; background-color: transparent; border-radius: 5px;"><a href="' +
         forgotPasswordLink +
         '"style="color: #272727; text-decoration: none;">Reset Password</a></button><br/><br/>' +
         "We recommend that you keep your password secure and not share it with anyone.If you didn't request to this message, simply ignore this message.<br/><br/>" +
-        "NeuroGenAI Management System </span> </td> </tr> </table> </td> </tr> </table> </body></html>",
+        "MTU System </span> </td> </tr> </table> </td> </tr> </table> </body></html>",
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
