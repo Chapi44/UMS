@@ -242,7 +242,6 @@ const ResetPassword = async (req, res) => {
 module.exports = {
   register,
   signin,
-
   forgotPassword,
   ResetPassword,
   registerUser
