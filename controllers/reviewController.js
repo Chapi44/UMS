@@ -1,5 +1,5 @@
-const Review = require('../models/Review');
-const Product = require('../models/Product');
+const Review = require('../model/Review');
+const Product = require('../model/post');
 
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');

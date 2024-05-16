@@ -16,6 +16,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userroutes.js");
 const productRoutes= require("./routes/postRoutes.js")
+const orderRoutes= require("./routes/orderRoutes.js")
+const reviewRoutes= require("./routes/reviewRoutes.js")
 // const corsOptions = require("./config/corsOptions.js")
 // const paymentRouter = require("./routes/paymentRouter.js");
 // Middleware
@@ -29,6 +31,9 @@ app.use(cookieParser(process.env.JWT_SECRET));
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/product", productRoutes)
+app.use("/api/v1/orders", orderRoutes)
+app.use("/api/v1/review", reviewRoutes)
+
 // app.use("/payment", paymentRouter);
 
 app.use(notFoundMiddleware);

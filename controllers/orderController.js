@@ -1,5 +1,5 @@
-const Order = require('../models/Order');
-const Product = require('../models/Product');
+const Order = require('../model/order');
+const Product = require('../model/post');
 
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
@@ -11,16 +11,19 @@ const fakeStripeAPI = async ({ amount, currency }) => {
 };
 
 const createOrder = async (req, res) => {
-  const { items: cartItems, tax, shippingFee } = req.body;
+  const { items: cartItems, encrypted_url,shippingFee} = req.body;
+
+  const userId = req.user.userId;
+  if (!userId) {
+    throw new CustomError.BadRequestError('User not found');
+  }
 
   if (!cartItems || cartItems.length < 1) {
     throw new CustomError.BadRequestError('No cart items provided');
   }
-  if (!tax || !shippingFee) {
-    throw new CustomError.BadRequestError(
-      'Please provide tax and shipping fee'
-    );
-  }
+
+  // Fetch user's previous orders
+  const userOrders = await Order.find({ user: userId });
 
   let orderItems = [];
   let subtotal = 0;
@@ -32,41 +35,56 @@ const createOrder = async (req, res) => {
         `No product with id : ${item.product}`
       );
     }
-    const { name, price, image, _id } = dbProduct;
+
+    // Check if the user has already ordered this product
+    const productOrdered = userOrders.some(order =>
+      order.orderItems.some(orderItem => orderItem.product.equals(dbProduct._id))
+    );
+
+
+    const { images, courseName, price, _id } = dbProduct;
     const singleOrderItem = {
-      amount: item.amount,
-      name,
+      amount: item.amount, // Fixed amount to 1
       price,
-      image,
+      images,
+      courseName,
       product: _id,
     };
+
     // add item to order
-    orderItems = [...orderItems, singleOrderItem];
+    orderItems.push(singleOrderItem);
     // calculate subtotal
-    subtotal += item.amount * price;
+    subtotal += item.amount * price; // Since amount is always 1, no need to multiply with amount
   }
+
   // calculate total
-  const total = tax + shippingFee + subtotal;
+  const total = subtotal;
   // get client secret
   const paymentIntent = await fakeStripeAPI({
     amount: total,
     currency: 'usd',
   });
 
+  // create the order with populated orderItems
   const order = await Order.create({
     orderItems,
     total,
     subtotal,
-    tax,
-    shippingFee,
     clientSecret: paymentIntent.client_secret,
-    user: req.user.userId,
+    encrypted_url,
+    user: userId,
   });
 
+  // Populate product details in orderItems
+  await Order.populate(order, { path: 'orderItems.product' });
+
+  // send the order details in the response
   res
     .status(StatusCodes.CREATED)
     .json({ order, clientSecret: order.clientSecret });
 };
+
+
 const getAllOrders = async (req, res) => {
   const orders = await Order.find({});
   res.status(StatusCodes.OK).json({ orders, count: orders.length });
@@ -92,7 +110,7 @@ const updateOrder = async (req, res) => {
   if (!order) {
     throw new CustomError.NotFoundError(`No order with id : ${orderId}`);
   }
-  checkPermissions(req.user, order.user);
+  // checkPermissions(req.user, order.user);
 
   order.paymentIntentId = paymentIntentId;
   order.status = 'paid';

@@ -144,7 +144,40 @@ const getSinglepost = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
   }
 };
+const getCategories = async (req, res) => {
+  try {
+    const categories = await Catagory.find({})
+      .populate({
+        path: "user",
+        select: "name username pictures" // Specify the fields you want to include
+      })
+      .lean(); // Convert Mongoose documents to plain JavaScript objects
 
+    res.status(StatusCodes.OK).json({ categories });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
+const getCategoryById = async (req, res) => {
+  try {
+    const categoryId = req.params.id;
+    const category = await Catagory.findById(categoryId)
+      .populate({
+        path: "user",
+        select: "name username pictures" // Specify the fields you want to include
+      })
+      .lean(); // Convert Mongoose document to plain JavaScript object
+
+    if (!category) {
+      return res.status(StatusCodes.NOT_FOUND).json({ error: "Category not found" });
+    }
+
+    res.status(StatusCodes.OK).json({ category });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
 
 
 const updatepostbyid = async (req, res) => {
@@ -160,7 +193,6 @@ const updatepostbyid = async (req, res) => {
 
     // Ensure that the user is the creator of the post
     if (updatedPost.user.toString() !== req.user.userId) {
-      console.log(req.userId);
       return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to update this post" });
     }
 
@@ -173,6 +205,26 @@ const updatepostbyid = async (req, res) => {
     }
     if (req.body.category) {
       updatedPost.catagory = req.body.category;
+    }
+    if (req.body.size) {
+      updatedPost.size = req.body.size;
+    }
+    if (req.body.color) {
+      updatedPost.color = req.body.color;
+    }
+    if (req.body.price) {
+      updatedPost.price = req.body.price;
+    }
+    if (req.body.priceDiscount) {
+      updatedPost.priceDiscount = req.body.priceDiscount;
+      // Set hasDiscount to true if priceDiscount is provided
+      updatedPost.hasDiscount = req.body.hasDiscount === true; // This ensures it's explicitly set to true if provided
+    }
+    if (req.body.Date) {
+      updatedPost.Date = req.body.Date;
+    }
+    if (req.body.hasDiscount !== undefined) {
+      updatedPost.hasDiscount = req.body.hasDiscount; // Update hasDiscount if provided in the request body
     }
 
     // Handle image update if available
@@ -209,6 +261,41 @@ const updatepostbyid = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
   }
 };
+
+
+const gethasDiscount = async (req, res) => {
+  try {
+    const productsWithDiscount = await Product.find({ hasDiscount: true })
+      .populate({
+        path: "user",
+        select: "name username pictures" // Specify the fields you want to include
+      })
+      .populate({ 
+        path: "likes", 
+        populate: { 
+          path: "user", 
+          select: "username pictures" // Include username and pictures of the user who liked
+        } 
+      })
+      .lean(); // Convert Mongoose documents to plain JavaScript objects
+
+    // Calculate the number of replies and likes for each post
+    productsWithDiscount.forEach(post => {
+      post.repliesCount = post.replies.length;
+      post.likesCount = post.likes.length;
+
+      // Calculate the number of likes for each reply
+      post.replies.forEach(reply => {
+        reply.likesCount = reply.likes.length;
+      });
+    });
+
+    res.status(StatusCodes.OK).json({ productsWithDiscount });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
+
 
 const deletepostbyid = async (req, res) => {
   const productId = req.params.id;
@@ -429,7 +516,10 @@ module.exports = {
   replyToPost,
   likeOrUnlikeReply,
   replyToReply,
-  createcatagories
+  createcatagories,
+  gethasDiscount,
+  getCategoryById,
+  getCategories
 
 };
 

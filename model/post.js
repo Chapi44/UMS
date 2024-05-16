@@ -20,6 +20,13 @@ const ProductSchema = new mongoose.Schema(
     type: [String],
     default: [],
   },
+  priceDiscount: {
+    type: Number,
+  
+  },
+  Date:{
+    type: Date
+  },
   size:{
     type: [String],
     default: [],
@@ -72,6 +79,10 @@ const ProductSchema = new mongoose.Schema(
           replies:[]
 			},
 		],
+    hasDiscount: {
+      type: Boolean,
+      default:false,
+    }
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
