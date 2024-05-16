@@ -11,7 +11,7 @@ const fakeStripeAPI = async ({ amount, currency }) => {
 };
 
 const createOrder = async (req, res) => {
-  const { items: cartItems, encrypted_url,shippingFee} = req.body;
+  const { items: cartItems, encrypted_url, shippingFee } = req.body;
 
   const userId = req.user.userId;
   if (!userId) {
@@ -41,7 +41,6 @@ const createOrder = async (req, res) => {
       order.orderItems.some(orderItem => orderItem.product.equals(dbProduct._id))
     );
 
-
     const { images, courseName, price, _id } = dbProduct;
     const singleOrderItem = {
       amount: item.amount, // Fixed amount to 1
@@ -58,7 +57,8 @@ const createOrder = async (req, res) => {
   }
 
   // calculate total
-  const total = subtotal;
+  const total = shippingFee + subtotal;
+
   // get client secret
   const paymentIntent = await fakeStripeAPI({
     amount: total,
@@ -83,6 +83,7 @@ const createOrder = async (req, res) => {
     .status(StatusCodes.CREATED)
     .json({ order, clientSecret: order.clientSecret });
 };
+
 
 
 const getAllOrders = async (req, res) => {

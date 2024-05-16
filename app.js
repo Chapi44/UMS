@@ -17,7 +17,7 @@ const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userroutes.js");
 const productRoutes= require("./routes/postRoutes.js")
 const orderRoutes= require("./routes/orderRoutes.js")
-const reviewRoutes= require("./routes/reviewRoutes.js")
+const reviewRoutes= require("./routes/ReviewRoutes.js")
 // const corsOptions = require("./config/corsOptions.js")
 // const paymentRouter = require("./routes/paymentRouter.js");
 // Middleware

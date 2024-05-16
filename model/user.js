@@ -8,17 +8,8 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
-  username:{
-    type: String,
-    // unique: true,
-  },
-  bio:{
-    type: String
-  },
-  
-  profession: { // Adding the profession field
-    type: String
-  },
+
+
   pictures: {
     type: [String],
     default: [],
