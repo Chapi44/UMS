@@ -358,9 +358,7 @@ const likeProduct = async (req, res) => {
 
       totalLikes = product.numOfLikes;
 
-      res
-        .status(StatusCodes.OK)
-        .json({ message: "Product unliked successfully", totalLikes });
+      res.status(StatusCodes.OK).json({ message: 'Product unliked successfully', totalLikes });
     } else {
       // User hasn't liked the product, so like it
       const like = new Like({ user: userId, product: productId });
@@ -375,15 +373,28 @@ const likeProduct = async (req, res) => {
 
       totalLikes = product.numOfLikes;
 
-      res
-        .status(StatusCodes.OK)
-        .json({ message: "Product liked successfully", totalLikes });
+      res.status(StatusCodes.OK).json({ message: 'Product liked successfully', totalLikes });
     }
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
 
+const getLikedProducts = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // Find all likes by the user
+    const likes = await Like.find({ user: userId }).populate('product');
+
+    // Extract the products from the likes
+    const likedProducts = likes.map(like => like.product);
+
+    res.status(StatusCodes.OK).json({ likedProducts });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+  }
+};
 
 
 
@@ -398,7 +409,8 @@ module.exports = {
   createcatagories,
   gethasDiscount,
   getCategoryById,
-  getCategories
+  getCategories,
+  getLikedProducts
 
 };
 

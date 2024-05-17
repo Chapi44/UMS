@@ -12,7 +12,8 @@ const {
     createcatagories,
     gethasDiscount,
     getCategoryById,
-    getCategories    
+    getCategories,
+    getLikedProducts
 
   } = require("../controllers/postController");
 
@@ -59,6 +60,7 @@ router.get("/products/hasDiscount", gethasDiscount);
 
 router.post("/like/:id", authenticateUser, likeProduct);
 
+router.get('/products/liked-products', authenticateUser, getLikedProducts);
 
 
 
