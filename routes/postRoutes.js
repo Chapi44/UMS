@@ -8,11 +8,8 @@ const {
     getSinglepost,
     updatepostbyid,
     deletepostbyid,
-    replyToPost,
-    likeOrUnlikeReply,
     likeProduct,
     createcatagories,
-    replyToReply,
     gethasDiscount,
     getCategoryById,
     getCategories    
@@ -57,9 +54,7 @@ router
   router.get("/categories/cat", getCategories);
   router.get("/cat/:id", getCategoryById);
 
-router.put("/reply/:id", authenticateUser, replyToPost);
-router.post('/replytoreply', authenticateUser, replyToReply);
-router.post('/products/:productId/replies/:replyId/like', authenticateUser, likeOrUnlikeReply);
+
 router.get("/products/hasDiscount", gethasDiscount);
 
 router.post("/like/:id", authenticateUser, likeProduct);

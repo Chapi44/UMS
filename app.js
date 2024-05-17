@@ -18,6 +18,7 @@ const userRouter = require("./routes/userroutes.js");
 const productRoutes= require("./routes/postRoutes.js")
 const orderRoutes= require("./routes/orderRoutes.js")
 const reviewRoutes= require("./routes/ReviewRoutes.js")
+const cartRoutes= require("./routes/cartRoutes.js")
 // const corsOptions = require("./config/corsOptions.js")
 // const paymentRouter = require("./routes/paymentRouter.js");
 // Middleware
@@ -33,6 +34,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/product", productRoutes)
 app.use("/api/v1/orders", orderRoutes)
 app.use("/api/v1/review", reviewRoutes)
+app.use("/api/v1/cart",cartRoutes )
 
 // app.use("/payment", paymentRouter);
 

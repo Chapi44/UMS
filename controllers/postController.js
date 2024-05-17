@@ -74,7 +74,6 @@ const createcatagories = async (req, res) => {
   }
 };
 
-
 const getAllposts = async (req, res) => {
   try {
     const products = await Product.find({})
@@ -192,9 +191,9 @@ const updatepostbyid = async (req, res) => {
     }
 
     // Ensure that the user is the creator of the post
-    if (updatedPost.user.toString() !== req.user.userId) {
-      return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to update this post" });
-    }
+    // if (updatedPost.user.toString() !== req.user.userId) {
+    //   return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not authorized to update this post" });
+    // }
 
     // Update post properties if available
     if (req.body.name) {
@@ -312,9 +311,9 @@ const deletepostbyid = async (req, res) => {
     // Check if the user is the author of the post
     const isCreator = product.user.toString() === userId;
 
-    if (!isCreator) {
-      return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not allowed to delete this post", isCreator: isCreator });
-    }
+    // if (!isCreator) {
+    //   return res.status(StatusCodes.FORBIDDEN).json({ error: "You are not allowed to delete this post", isCreator: isCreator });
+    // }
 
     // Delete the post
     const result = await Product.deleteOne({ _id: productId });
@@ -385,124 +384,7 @@ const likeProduct = async (req, res) => {
   }
 };
 
-const replyToPost = async (req, res) => {
-  try {
-    const { text } = req.body;
-    const postId = req.params.id;
-    const userId = req.user.userId;
-    const pictures = req.user.pictures;
-    const username = req.user.username;
 
-    if (!text) {
-      return res.status(400).json({ error: "Text field is required" });
-    }
-
-    const post = await Product.findById(postId);
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-
-    // Create a reply object
-    const reply = { userId, text, pictures, username };
-
-    // Push the reply to the post's replies array
-    post.replies.push(reply);
-
-    // Save the updated post
-    await post.save();
-
-    res.status(200).json(reply);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-
-const replyToReply = async (req, res) => {
-  try {
-    const { text, replyId, postId } = req.body; // Extracting postId from the request body
-    const userId = req.userId;
-    const pictures = req.user.pictures;
-    const username = req.user.username;
-
-    if (!text || !postId) { // Checking if text and postId are provided
-      return res.status(400).json({ error: "Text and postId fields are required" });
-    }
-
-    const post = await Product.findById(postId);
-    if (!post) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-
-    const parentReply = post.replies.find(reply => reply._id.toString() === replyId);
-    if (!parentReply) {
-      return res.status(404).json({ error: "Parent reply not found" });
-    }
-
-    // Create a reply object
-    const reply = { userId, text, pictures, username, replies: [] };
-
-    // Push the reply to the parent reply's nested replies array
-    parentReply.replies.push(reply);
-
-    // Save the updated post
-    await post.save();
-
-    res.status(200).json(reply);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-
-
-const likeOrUnlikeReply = async (req, res) => {
-  try {
-    const { productId, replyId } = req.params;
-    const userId = req.userId;
-    console.log(userId);
-
-    // Find the product by its ID
-    const product = await Product.findById(productId);
-    if (!product) {
-      throw new CustomError.NotFoundError('Product not found');
-    }
-
-    // Find the reply within the product's replies array
-    const replyIndex = product.replies.findIndex(reply => reply._id.toString() === replyId);
-    if (replyIndex === -1) {
-      throw new CustomError.NotFoundError('Reply not found');
-    }
-
-    const reply = product.replies[replyIndex];
-
-    // Check if the user has already liked the reply
-    const existingLikeIndex = reply.likes.findIndex(like => like.toString() === userId);
-    const userLikedReply = existingLikeIndex !== -1;
-
-    if (userLikedReply) {
-      // User has already liked the reply, so unlike it
-      reply.likes.splice(existingLikeIndex, 1);
-      await product.save();
-
-      // Calculate total number of likes for the reply
-      const totalLikes = reply.likes.length;
-
-      res.status(StatusCodes.OK).json({ message: 'Reply unliked successfully', totalLikes });
-    } else {
-      // User hasn't liked the reply, so like it
-      reply.likes.push(userId);
-      await product.save();
-
-      // Calculate total number of likes for the reply
-      const totalLikes = reply.likes.length;
-
-      res.status(StatusCodes.OK).json({ message: 'Reply liked successfully', totalLikes });
-    }
-  } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
-  }
-};
 
 
 
@@ -513,9 +395,6 @@ module.exports = {
   updatepostbyid,
   deletepostbyid,
   likeProduct,
-  replyToPost,
-  likeOrUnlikeReply,
-  replyToReply,
   createcatagories,
   gethasDiscount,
   getCategoryById,

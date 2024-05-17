@@ -16,6 +16,7 @@ const ProductSchema = new mongoose.Schema(
       default: [],
    
   },
+  
   color:{
     type: [String],
     default: [],
