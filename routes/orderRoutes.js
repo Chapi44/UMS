@@ -16,7 +16,7 @@ const {
 router
   .route('/')
   .post(authenticateUser, createOrder)
-  .get(authenticateUser, authorizePermissions('admin'), getAllOrders);
+  .get(authenticateUser,  getAllOrders);
 
 router.route('/showAllMyOrders').get(authenticateUser, getCurrentUserOrders);
 
