@@ -26,7 +26,7 @@ router.post('/', authenticateUser, async (req, res) => {
       const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
   
       if (itemIndex > -1) {
-        cart.items[itemIndex].quantity += quantity;
+        cart.items[itemIndex].quantity = quantity;
       } else {
         cart.items.push({ product: productId, quantity });
       }
@@ -68,15 +68,15 @@ router.get('/', authenticateUser, async (req, res) => {
     }
   });
 
-  
+
 
 // Update cart item
-router.put('/cart', authenticateUser, async (req, res) => {
+router.put('/', authenticateUser, async (req, res) => {
   const { productId, quantity } = req.body;
   const userId = req.user.userId;
 
   try {
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ user: userId }).populate('items.product');
     if (!cart) {
       return res.status(StatusCodes.NOT_FOUND).json({ error: 'Cart not found' });
     }
@@ -92,36 +92,52 @@ router.put('/cart', authenticateUser, async (req, res) => {
       return res.status(StatusCodes.NOT_FOUND).json({ error: 'Product not in cart' });
     }
 
+    // Calculate subtotal
+    let subtotal = 0;
+    cart.items.forEach(item => {
+      subtotal += item.quantity * item.product.price;
+    });
+    cart.subtotal = subtotal;
+
     await cart.save();
     res.status(StatusCodes.OK).json(cart);
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
   }
 });
+
 
 // Remove cart item
 router.delete('/cart', authenticateUser, async (req, res) => {
-  const { productId } = req.body;
-  const userId = req.user.userId;
-
-  try {
-    const cart = await Cart.findOne({ user: userId });
-    if (!cart) {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: 'Cart not found' });
+    const { productId } = req.body;
+    const userId = req.user.userId;
+  
+    try {
+      const cart = await Cart.findOne({ user: userId }).populate('items.product');
+      if (!cart) {
+        return res.status(StatusCodes.NOT_FOUND).json({ error: 'Cart not found' });
+      }
+  
+      const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+      if (itemIndex > -1) {
+        cart.items.splice(itemIndex, 1);
+      } else {
+        return res.status(StatusCodes.NOT_FOUND).json({ error: 'Product not in cart' });
+      }
+  
+      // Calculate subtotal
+      let subtotal = 0;
+      cart.items.forEach(item => {
+        subtotal += item.quantity * item.product.price;
+      });
+      cart.subtotal = subtotal;
+  
+      await cart.save();
+      res.status(StatusCodes.OK).json(cart);
+    } catch (error) {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
     }
-
-    const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
-    if (itemIndex > -1) {
-      cart.items.splice(itemIndex, 1);
-    } else {
-      return res.status(StatusCodes.NOT_FOUND).json({ error: 'Product not in cart' });
-    }
-
-    await cart.save();
-    res.status(StatusCodes.OK).json(cart);
-  } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal server error' });
-  }
-});
+  });
+  
 
 module.exports = router;
