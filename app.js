@@ -19,13 +19,13 @@ const productRoutes= require("./routes/postRoutes.js")
 const orderRoutes= require("./routes/orderRoutes.js")
 const reviewRoutes= require("./routes/ReviewRoutes.js")
 const cartRoutes= require("./routes/cartRoutes.js")
-// const corsOptions = require("./config/corsOptions.js")
+const corsOptions = require("./config/corsOptions.js")
 // const paymentRouter = require("./routes/paymentRouter.js");
 // Middleware
 const notFoundMiddleware = require("./middleware/not-found.js");
 const errorHandlerMiddleware = require("./middleware/error-handler.js");
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(morgan("tiny"));
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));

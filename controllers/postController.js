@@ -15,7 +15,7 @@ const createposts = async (req, res) => {
     const pictures = req.files.map(file => baseURL + "/uploads/posts/" + file.filename);
 
     // Use req.userId obtained from the decoded token
-    const userId = req.user.userId;
+      const {userId} = req.body;
     console.log(userId);
 
     const newPost = await Product.create({
@@ -50,7 +50,7 @@ const createcatagories = async (req, res) => {
     const pictures = req.files.map(file => baseURL + "/uploads/posts/" + file.filename);
 
     // Use req.userId obtained from the decoded token
-    const userId = req.user.userId;
+      const {userId}= req.body;
     console.log(userId);
 
     const newPost = await Catagory.create({
@@ -298,7 +298,7 @@ const gethasDiscount = async (req, res) => {
 
 const deletepostbyid = async (req, res) => {
   const productId = req.params.id;
-  const userId = req.userId;
+    const {userId}= req.body;
 
   try {
     // Find the product by ID
@@ -332,7 +332,7 @@ const deletepostbyid = async (req, res) => {
 const likeProduct = async (req, res) => {
   try {
     const { id: productId } = req.params;
-    const userId = req.user.userId;
+      const {userId}= req.body;
 
     // Check if the user has already liked the product
     const existingLike = await Like.findOne({
@@ -382,7 +382,7 @@ const likeProduct = async (req, res) => {
 
 const getLikedProducts = async (req, res) => {
   try {
-    const userId = req.user.userId;
+      const {userId}= req.body;
 
     // Find all likes by the user
     const likes = await Like.find({ user: userId }).populate('product');

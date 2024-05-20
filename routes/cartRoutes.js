@@ -4,12 +4,12 @@ const Cart = require('../model/Cart');
 const Product = require('../model/post');
 const { StatusCodes } = require('http-status-codes');
 // Middleware to get user ID from the token
-const { authenticateUser } = require('../middleware/authentication');
+// const {  } = require('../middleware/authentication');
 
 // Add to cart
-router.post('/', authenticateUser, async (req, res) => {
+router.post('/', async (req, res) => {
     const { productId, quantity } = req.body;
-    const userId = req.user.userId;
+      const {userId}= req.body;
   
     try {
       let cart = await Cart.findOne({ user: userId });
@@ -46,8 +46,8 @@ router.post('/', authenticateUser, async (req, res) => {
     }
   });
 // View cart
-router.get('/', authenticateUser, async (req, res) => {
-    const userId = req.user.userId;
+router.get('/',  async (req, res) => {
+      const {userId}= req.body;
   
     try {
       const cart = await Cart.findOne({ user: userId }).populate('items.product');
@@ -71,9 +71,9 @@ router.get('/', authenticateUser, async (req, res) => {
 
 
 // Update cart item
-router.put('/', authenticateUser, async (req, res) => {
+router.put('/', async (req, res) => {
   const { productId, quantity } = req.body;
-  const userId = req.user.userId;
+    const {userId}= req.body;
 
   try {
     const cart = await Cart.findOne({ user: userId }).populate('items.product');
@@ -108,9 +108,9 @@ router.put('/', authenticateUser, async (req, res) => {
 
 
 // Remove cart item
-router.delete('/cart', authenticateUser, async (req, res) => {
+router.delete('/cart', async (req, res) => {
     const { productId } = req.body;
-    const userId = req.user.userId;
+      const {userId}= req.body;
   
     try {
       const cart = await Cart.findOne({ user: userId }).populate('items.product');

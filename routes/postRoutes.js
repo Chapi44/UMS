@@ -17,10 +17,6 @@ const {
 
   } = require("../controllers/postController");
 
-const {
-  authenticateUser ,
-  authorizePermissions1 ,
-} = require("../middleware/authentication");
 
 
 const storage = multer.diskStorage({
@@ -34,12 +30,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.route("/").post(
-  authenticateUser,
+ 
   upload.array('images', 6),
   createposts
   )
   router.route("/catagorie").post(
-    authenticateUser,
+   
     upload.array('images', 6),
     createcatagories
     )
@@ -48,9 +44,9 @@ router.route("/").post(
 router
   .route("/:id")
   .get(getSinglepost)
- router.delete("/:id",authenticateUser,deletepostbyid);
+ router.delete("/:id",deletepostbyid);
 
-  router.put("/:id",authenticateUser, upload.array("images", 6), updatepostbyid);
+  router.put("/:id", upload.array("images", 6), updatepostbyid);
 
   router.get("/categories/cat", getCategories);
   router.get("/cat/:id", getCategoryById);
@@ -58,9 +54,9 @@ router
 
 router.get("/products/hasDiscount", gethasDiscount);
 
-router.post("/like/:id", authenticateUser, likeProduct);
+router.post("/like/:id", likeProduct);
 
-router.get('/products/liked-products', authenticateUser, getLikedProducts);
+router.post('/products/liked-products', getLikedProducts);
 
 
 

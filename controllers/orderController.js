@@ -12,7 +12,7 @@ const fakeStripeAPI = async ({ amount, currency }) => {
 };
 
 const createOrder = async (req, res) => {
-  const userId = req.user.userId;
+    const {userId}= req.body;
   const { shippingFee } = req.body;
 
   try {

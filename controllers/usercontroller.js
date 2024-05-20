@@ -42,7 +42,7 @@ const deleteuser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const userId = req.user.userId;
+      const {userId}= req.body;
     let updatedUser = await User.findById(userId);
 
     if (!updatedUser) {

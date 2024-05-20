@@ -2,10 +2,7 @@ const express = require("express");
 const router = express.Router();
 // const path = require("path");
 
-const {
-  authenticateUser,
-  authorizePermissions,
-} = require("../middleware/authentication");
+
 
 const {
   createReview,
@@ -21,9 +18,8 @@ router.get("/", getAllReviews);
 router
   .route("/:id")
   .get(getSingleReview)
-  .patch(authenticateUser, updateReview)
+  .patch( updateReview)
   .delete(
-    [authenticateUser],
     deleteReview
   );
 

@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const User = require("../model/user"); // Ensure you import the User model
 const { attachCookiesToResponse, createTokenUser } = require("../utils");
-
+const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
   try {
@@ -110,11 +110,35 @@ const signin = async (req, res) => {
         .status(StatusCodes.UNAUTHORIZED)
         .json({ error: "Incorrect password" });
     }
+    const secretKey = process.env.JWT_SECRET;
+    const tokenExpiration = process.env.JWT_LIFETIME;
+  
 
-    const tokenUser = createTokenUser(user);
-    attachCookiesToResponse({ res, user: tokenUser });
-
-    res.status(StatusCodes.OK).json({ user: tokenUser });
+    const token = jwt.sign(
+      { 
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+        pictures: user.pictures,
+        fullname: user.fullname,
+        phoneNumber: user.phoneNumber,
+        status: user.status
+      },
+      secretKey,
+      { expiresIn: tokenExpiration }
+    );
+  
+    // Attach the token as a cookie
+    // res.cookie('token', token, {
+    //   // httpOnly: true, // Prevents client-side access to the cookie
+    //   maxAge: 1000 * 60 * 60 * 24 * 7, // Cookie expiry time (7 days in this case)
+    //   // secure: true, // Uncomment this line if using HTTPS
+    //   // sameSite: 'none' // Uncomment this line if using cross-site requests
+    // });
+  
+    res.status(StatusCodes.OK).json({
+      token,user
+    });
   } catch (error) {
     console.error(error);
     res
