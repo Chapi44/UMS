@@ -9,7 +9,7 @@ const baseURL = process.env.BASE_URL;
 
 const createposts = async (req, res) => {
   try {
-    const { name, description,catagory,color,price,size } = req.body;
+    const { name, description,catagory,color,price,size, priceDiscount,hasDiscount} = req.body;
 
     // Construct image paths with base URL
     const pictures = req.files.map(file => baseURL + "/uploads/posts/" + file.filename);
@@ -25,6 +25,8 @@ const createposts = async (req, res) => {
       images: pictures,
       color,
       price,
+      priceDiscount,
+      hasDiscount,
       size,
       user: userId, // Assign userId to the user field
     
