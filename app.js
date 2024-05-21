@@ -20,7 +20,7 @@ const orderRoutes= require("./routes/orderRoutes.js")
 const reviewRoutes= require("./routes/ReviewRoutes.js")
 const cartRoutes= require("./routes/cartRoutes.js")
 const corsOptions = require("./config/corsOptions.js")
-// const paymentRouter = require("./routes/paymentRouter.js");
+const paymentRouter = require("./routes/paymentRouter.js");
 // Middleware
 const notFoundMiddleware = require("./middleware/not-found.js");
 const errorHandlerMiddleware = require("./middleware/error-handler.js");
@@ -36,7 +36,7 @@ app.use("/api/v1/orders", orderRoutes)
 app.use("/api/v1/review", reviewRoutes)
 app.use("/api/v1/cart",cartRoutes )
 
-// app.use("/payment", paymentRouter);
+app.use("/payment", paymentRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
